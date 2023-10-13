@@ -1,4 +1,4 @@
-//  Using coordinators to manage SwiftUI view controllers
+//  How to save images to the user’s photo library
 
 import SwiftUI
 import CoreImage
@@ -16,6 +16,12 @@ struct ContentView: View {
                 .scaledToFit()
             Button("Select image") {
                 showingImagePicker = true
+            }
+            Button("Save image") {
+                guard let inputImage = inputImage else { return }
+
+                let imageSaver = ImageSaver()
+                imageSaver.writeToPhotoAlbum(image: inputImage)
             }
         }
         .sheet(isPresented: $showingImagePicker) {
