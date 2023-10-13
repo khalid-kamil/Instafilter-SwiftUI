@@ -1,4 +1,4 @@
-//  Customizing our filter using confirmationDialog()
+//  Saving the filtered image using UIImageWriteToSavedPhotosAlbum()
 
 import SwiftUI
 import CoreImage
@@ -7,6 +7,7 @@ import CoreImage.CIFilterBuiltins
 struct ContentView: View {
     @State private var image: Image?
     @State private var inputImage: UIImage?
+    @State private var processedImage: UIImage?
     @State private var filterIntensity = 0.5
     @State private var showingImagePicker = false
     @State private var showingFilterSheet = false
@@ -36,8 +37,8 @@ struct ContentView: View {
                     Text("Intensity")
                     Slider(value: $filterIntensity)
                         .onChange(of: filterIntensity) { _ in
-                                applyProcessing()
-                            }
+                            applyProcessing()
+                        }
                 }
                 .padding(.vertical)
 
@@ -101,10 +102,21 @@ extension ContentView {
         if let cgimg = context.createCGImage(outputImage, from: outputImage.extent) {
             let uiImage = UIImage(cgImage: cgimg)
             image = Image(uiImage: uiImage)
+            processedImage = uiImage
         }
     }
 
     func save() {
+        guard let processedImage = processedImage else { return }
 
+        let imageSaver = ImageSaver()
+        imageSaver.successHandler = {
+            print("Success!")
+        }
+
+        imageSaver.errorHandler = {
+            print("Oops: \($0.localizedDescription)")
+        }
+        imageSaver.writeToPhotoAlbum(image: processedImage)
     }
 }
